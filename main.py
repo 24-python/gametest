@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 pygame.init()
 
@@ -27,6 +28,16 @@ score = 0
 # Шрифт для отображения счета
 font = pygame.font.Font(None, 36)
 
+# Скорость мишени в пикселях в секунду (1 см ≈ 38 пикселей)
+speed = 38
+
+# Переменные для направления движения мишени
+direction_x = random.choice([-1, 1])
+direction_y = random.choice([-1, 1])
+
+# Переменная для отслеживания времени
+clock = pygame.time.Clock()
+
 # Основной цикл игры
 running = True
 while running:
@@ -42,6 +53,16 @@ while running:
                 target_y = random.randint(0, SCREEN_HEIGHT - target_height)
                 score += 1  # Увеличиваем счет при попадании
 
+    # Обновление позиции мишени
+    target_x += direction_x * speed / 60  # Делим на 60, так как обновляем 60 раз в секунду
+    target_y += direction_y * speed / 60
+
+    # Проверка границ экрана и смена направления при столкновении
+    if target_x <= 0 or target_x >= SCREEN_WIDTH - target_width:
+        direction_x *= -1
+    if target_y <= 0 or target_y >= SCREEN_HEIGHT - target_height:
+        direction_y *= -1
+
     # Отображение мишени
     screen.blit(target_img, (target_x, target_y))
 
@@ -50,5 +71,8 @@ while running:
     screen.blit(score_text, (SCREEN_WIDTH - score_text.get_width() - 10, 10))
 
     pygame.display.update()
+
+    # Ограничение FPS до 60 кадров в секунду
+    clock.tick(60)
 
 pygame.quit()
